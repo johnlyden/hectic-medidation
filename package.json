@@ -1,0 +1,26 @@
+{
+  "name": "hectic-writer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "hectic-writer",
+  "author": "johnlyden",
+  "keywords": [
+    "gatsby"
+  ],
+  "scripts": {
+    "develop": "gatsby develop",
+    "start": "gatsby develop",
+    "build": "gatsby build",
+    "serve": "gatsby serve",
+    "clean": "gatsby clean"
+  },
+  "license": "0BSD",
+  "dependencies": {
+    "gatsby": "^2.26.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-spring": "8.0.19",
+    "react-three-fiber": "4.0.8",
+    "three": "0.102.1"
+  }
+}
