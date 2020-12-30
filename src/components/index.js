@@ -1,5 +1,5 @@
-import ReactDOM from 'react-dom';
 import * as THREE from 'three/src/Three';
+
 import React, {
   useState,
   useRef,
@@ -7,6 +7,7 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
+
 // A THREE.js React renderer, see: https://github.com/drcmda/react-three-fiber
 import {
   extend as applyThree,
@@ -14,14 +15,9 @@ import {
   useFrame,
   useThree,
 } from 'react-three-fiber';
+
 // A React animation lib, see: https://github.com/react-spring/react-spring
-import {
-  apply as applySpring,
-  useSpring,
-  a,
-  interpolate,
-} from 'react-spring/three';
-import data from './data';
+import { apply as applySpring, useSpring, a } from 'react-spring/three';
 import './styles.css';
 
 // Import and register postprocessing classes as three-native-elements for both react-three-fiber & react-spring
@@ -31,28 +27,6 @@ import { RenderPass } from './postprocessing/RenderPass';
 import { GlitchPass } from './postprocessing/GlitchPass';
 applySpring({ EffectComposer, RenderPass, GlitchPass });
 applyThree({ EffectComposer, RenderPass, GlitchPass });
-
-/** This component loads an image and projects it onto a plane */
-// function Image({ url, opacity, scale, ...props }) {
-//   const texture = useMemo(() => new THREE.TextureLoader().load(url), [url]);
-//   const [hovered, setHover] = useState(false);
-//   const hover = useCallback(() => setHover(true), []);
-//   const unhover = useCallback(() => setHover(false), []);
-//   const { factor } = useSpring({ factor: hovered ? 1.1 : 1 });
-//   return (
-//     <a.mesh
-//       {...props}
-//       onHover={hover}
-//       onUnhover={unhover}
-//       scale={factor.interpolate((f) => [scale * f, scale * f, 1])}
-//     >
-//       <planeBufferGeometry attach='geometry' args={[5, 5]} />
-//       <a.meshLambertMaterial attach='material' transparent opacity={opacity}>
-//         <primitive attach='map' object={texture} />
-//       </a.meshLambertMaterial>
-//     </a.mesh>
-//   );
-// }
 
 /** This renders text via canvas and projects it as a sprite */
 function Text({
@@ -75,6 +49,7 @@ function Text({
     context.textAlign = 'center';
     context.textBaseline = 'middle';
     context.fillStyle = color;
+    context.width = 400;
     context.fillText(children, 1024, 1024 - 410 / 2);
     return canvas;
   }, [children, width, height]);
@@ -89,17 +64,6 @@ function Text({
         />
       </a.spriteMaterial>
     </a.sprite>
-  );
-}
-
-/** This component creates a fullscreen colored plane */
-function Background({ color }) {
-  const { viewport } = useThree();
-  return (
-    <mesh scale={[viewport.width, viewport.height, 1]}>
-      <planeGeometry attach='geometry' args={[1, 1]} />
-      <a.meshBasicMaterial attach='material' color={color} depthTest={false} />
-    </mesh>
   );
 }
 
@@ -154,29 +118,8 @@ const Effects = React.memo(({ factor }) => {
   );
 });
 
-/** This component creates a bunch of parallaxed images */
-// function Images({ top, mouse, scrollMax }) {
-//   return data.map(([url, x, y, factor, z, scale], index) => (
-//     <Image
-//       key={index}
-//       url={url}
-//       scale={scale}
-//       opacity={top.interpolate([0, 500], [0, 1])}
-//       position={interpolate([top, mouse], (top, mouse) => [
-//         (-mouse[0] * factor) / 50000 + x,
-//         (mouse[1] * factor) / 50000 +
-//           y * 1.15 +
-//           ((top * factor) / scrollMax) * 2,
-//         z + top / 2000,
-//       ])}
-//     />
-//   ));
-// }
-
 /** This component maintains the scene */
-function Scene({ top, mouse, text }) {
-  const { size } = useThree();
-  const scrollMax = size.height * 4.5;
+function Scene({ top, mouse, text1, text2 }) {
   return (
     <>
       <a.spotLight
@@ -185,72 +128,46 @@ function Scene({ top, mouse, text }) {
         position={mouse.interpolate((x, y) => [x / 100, -y / 100, 6.5])}
       />
       <Effects factor={top.interpolate([0, 150], [1, 0])} />
-      <Background
-        color={top.interpolate(
-          [0, scrollMax * 0.25, scrollMax * 0.8, scrollMax],
-          ['#27282F', '#247BA0', '#70C1B3', '#f8f3f1']
-        )}
-      />
       <Stars position={top.interpolate((top) => [0, -1 + top / 20, 0])} />
-      {/* <Images top={top} mouse={mouse} scrollMax={scrollMax} /> */}
+      <Text
+        opacity={top.interpolate([0, 200], [1, 0])}
+        position={top.interpolate((top) => [0, top, 0])}
+        fontSize={250}
+      >
+        {text1}
+      </Text>
       <Text
         opacity={top.interpolate([0, 200], [1, 0])}
         position={top.interpolate((top) => [0, -1 + top / 200, 0])}
-        fontSize={200}
+        fontSize={350}
       >
-        {text}
+        {text2}
       </Text>
-      {/* <Text
-        position={top.interpolate((top) => [
-          0,
-          -20 + ((top * 10) / scrollMax) * 2,
-          0,
-        ])}
-        color='black'
-        fontSize={150}
-      >
-        Ipsum
-      </Text> */}
     </>
   );
 }
+
+const IN = 'In';
+const OUT = 'Out';
 
 /** Main component */
 export default function Main() {
   // This tiny spring right here controlls all(!) the animations, one for scroll, the other for mouse movement ...
   const [{ top, mouse }, set] = useSpring(() => ({ top: 0, mouse: [0, 0] }));
-  const onMouseMove = useCallback(
-    ({ clientX: x, clientY: y }) =>
-      set({ mouse: [x - window.innerWidth / 2, y - window.innerHeight / 2] }),
-    []
-  );
-  const onScroll = useCallback((e) => set({ top: e.target.scrollTop }), []);
-  const [text, setText] = useState('lor');
-  const inputRef = useRef(null);
+  const [breath, setBreath] = useState('in');
+  const text1 = 'Breathe';
 
   useEffect(() => {
-    // inputRef.curreasdfnt.value = 'hey';
-    inputRef.current.focus();
-  }, [inputRef.current]);
+    const interval = setInterval(() => {
+      setBreath((breath) => (breath === IN ? OUT : IN));
+    }, 3500);
+
+    return () => clearInterval(interval);
+  });
 
   return (
-    <>
-      <input
-        ref={inputRef}
-        onChange={(e) => setText(e.target.value)}
-        style={{ opacity: 0, position: 'absolute' }}
-      />
-      <Canvas className='canvas' style={{ height: '100vh' }}>
-        {/* <Scene top={top} mouse={mouse} text={inputRef.current?.value} /> */}
-        <Scene top={top} mouse={mouse} text={text} />
-      </Canvas>
-      <div
-        className='scroll-container'
-        onScroll={onScroll}
-        onMouseMove={onMouseMove}
-      >
-        <div style={{ height: '525vh' }} />
-      </div>
-    </>
+    <Canvas className='canvas' style={{ height: '100vh' }}>
+      <Scene top={top} mouse={mouse} text1={text1} text2={breath} />
+    </Canvas>
   );
 }
