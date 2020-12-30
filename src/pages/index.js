@@ -1,23 +1,10 @@
-import * as THREE from 'three/src/Three';
-
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, { useState, useEffect } from 'react';
 
 // A THREE.js React renderer, see: https://github.com/drcmda/react-three-fiber
-import {
-  extend as applyThree,
-  Canvas,
-  useFrame,
-  useThree,
-} from 'react-three-fiber';
+import { extend as applyThree, Canvas } from 'react-three-fiber';
 
 // A React animation lib, see: https://github.com/react-spring/react-spring
-import { apply as applySpring, useSpring, a } from 'react-spring/three';
+import { apply as applySpring, useSpring } from 'react-spring/three';
 import './styles.css';
 import Scene from '../components/Scene';
 
@@ -35,7 +22,7 @@ const OUT = 'Out';
 /** Main component */
 export default function Main() {
   // This tiny spring right here controlls all(!) the animations, one for scroll, the other for mouse movement ...
-  const [{ top, mouse }, set] = useSpring(() => ({ top: 0, mouse: [0, 0] }));
+  const [{ top, mouse }] = useSpring(() => ({ top: 0, mouse: [0, 0] }));
   const [breath, setBreath] = useState('...');
   const [text, setText] = useState('Get Ready');
 

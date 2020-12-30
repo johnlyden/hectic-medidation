@@ -1,23 +1,12 @@
 import * as THREE from 'three/src/Three';
 
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 
 // A THREE.js React renderer, see: https://github.com/drcmda/react-three-fiber
-import {
-  extend as applyThree,
-  Canvas,
-  useFrame,
-  useThree,
-} from 'react-three-fiber';
+import { extend as applyThree, useFrame, useThree } from 'react-three-fiber';
 
 // A React animation lib, see: https://github.com/react-spring/react-spring
-import { apply as applySpring, useSpring, a } from 'react-spring/three';
+import { apply as applySpring, a } from 'react-spring/three';
 
 // Import and register postprocessing classes as three-native-elements for both react-three-fiber & react-spring
 // They'll be available as native elements <effectComposer /> from then on ...
