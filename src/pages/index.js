@@ -36,12 +36,13 @@ const OUT = 'Out';
 export default function Main() {
   // This tiny spring right here controlls all(!) the animations, one for scroll, the other for mouse movement ...
   const [{ top, mouse }, set] = useSpring(() => ({ top: 0, mouse: [0, 0] }));
-  const [breath, setBreath] = useState('in');
-  const text1 = 'Breathe';
+  const [breath, setBreath] = useState('...');
+  const [text, setText] = useState('Get Ready');
 
   useEffect(() => {
     const interval = setInterval(() => {
       setBreath((breath) => (breath === IN ? OUT : IN));
+      setText('Breath');
     }, 3500);
 
     return () => clearInterval(interval);
@@ -49,7 +50,7 @@ export default function Main() {
 
   return (
     <Canvas className='canvas' style={{ height: '100vh' }}>
-      <Scene top={top} mouse={mouse} text1={text1} text2={breath} />
+      <Scene top={top} mouse={mouse} text1={text} text2={breath} />
     </Canvas>
   );
 }
