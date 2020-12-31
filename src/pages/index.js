@@ -29,7 +29,7 @@ export default function Main() {
   useEffect(() => {
     const interval = setInterval(() => {
       setBreath((breath) => (breath === IN ? OUT : IN));
-      setText('Breath');
+      setText('Breathe');
     }, 3500);
 
     return () => clearInterval(interval);
