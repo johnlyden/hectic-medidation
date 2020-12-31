@@ -16,8 +16,8 @@ import { GlitchPass } from '../helpers/postprocessing/GlitchPass';
 applySpring({ EffectComposer, RenderPass, GlitchPass });
 applyThree({ EffectComposer, RenderPass, GlitchPass });
 
-const IN = 'In';
-const OUT = 'Out';
+const IN = 'In...';
+const OUT = 'Out...';
 
 /** Main component */
 export default function Main() {
